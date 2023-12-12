@@ -1,13 +1,28 @@
 ---
 title: Sexual Dimorphism of Penguins
-author: Duygu Nur Arabaci, University of Potsdam, Germany; Mekontso Tepeu Florentin Jose, University of Potsdam, Germany
-deadline: 2023-12-29
+author: 
+- name: Duygu Nur Arabaci
+  affiliation: Department of Bioinformatics, University of Potsdam, Germany
+- name: Mekontso Tepeu Florentin Jose
+  affiliation: Department of Bioinformatics, University of Potsdam, Germany
+bibliography: [penguins_refs.bib, packages.bib]
+
+nocite: '@*'
+
+output:
+  bookdown::html_document2:
+  number_sections: TRUE
+  fig_caption: TRUE
+
 ---
 
+```{r include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message = FALSE, tidy = TRUE)
+```
 
-```{r}
+```{r label=loading,results="hide"}
 # Packages
-packages <- c("palmerpenguins", "ggplot2", "knitr")
+packages <- c("palmerpenguins", "ggplot2", "knitr", "tidyverse", "lsr", "bookdown")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
@@ -18,153 +33,63 @@ if (any(installed_packages == FALSE)) {
 # Packages loading
 invisible(lapply(packages, library, character.only = TRUE))
 
-source("lipsum.R")
+source("arabaci2_lipsum.R")
+
+#Create citations for packages used
+knitr::write_bib(c(.packages(), packages), "packages.bib")
 ```
 
-```{r include=FALSE}
-knitr::opts_chunk$set(comment = "###")
+# Abstract
+
+<div id="abstract">
+`r lipsum(2,paragraphs=1, lang="english")`
+</div>
+<br>
+
+# Introduction
+
+`r lipsum(2,paragraphs=1, lang="english")`
+
+# Data and Methods
+
+## General information about Palmer Penguins data
+```{r}
+penguins=as.data.frame(penguins)
+#number of penguins
+total_pengs=length(penguins$species)
+pengs = penguins %>% count(species)
+adelies = pengs[1,2]
+chinstraps = pengs[2,2]
+gentoos = pengs[3,2]
+
+tab = table(penguins$species, penguins$island)
 ```
 
-```{r label=loading,results="hide",echo=FALSE}
-### load required packages:
-library(knitr)
-library(palmerpenguins)
-```
-**Abstract**
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
+```{r tab}
+knitr::kable(tab,caption = "The number of penguin species on the three islands.")
 ```
 
+The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
 
-## Introduction
+# Statistical Analysis
 
+`r lipsum(2,paragraphs=1)`
 
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
+# Results
 
+`r lipsum(2,paragraphs=1)`
 
-## Data and Methods
+# Discussion
 
+`r lipsum(2,paragraphs=1)`
 
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
+# Acknowledgment
 
-## Statistical Analysis
+`r lipsum(2,paragraphs=1)`
 
+# Bibliography
 
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
+<div id="refs"></div>
 
-
-## Results
-
-
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
-
-## Discussion
-
-
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
-
-## Acknowledgment
-
-
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
-
-
-## References
-
-
-```{r lipsum(2,paragraphs=3)}
-knitr::opts_chunk$set(comment = "###")
-```
-
-
-## R Examples
-
-Delete the text which follows at the end:
-
-Data loading
-
-```{r label=data}
-data(iris)
-summary(iris)
-```
-
-Table example:
-
-```{r label=table,results="asis"}
-knitr::kable(head(iris))
-```
-
-Figure example:
-
-```{r label=fig1,fig.width=9,fig.height=6,out.width=800}
-with(iris,boxplot(Sepal.Length ~ Species,col=2:4))
-```
-
-Inline code example: We have `r nrow(iris)` plants in the dataset.
-
-## Markdown formatting
-
-* list item
-* list item
-
-__bold__, __italic__, `typewriter`
-
-> indented
-
-> * indented list
-  * indented list
-
-| col1  | col2 | col 3 |
-|:-----:|:----:|:-----:|
-|   1   |  2   | 3    |
-|   4   |  5   | 6    |
-
-
-Some more text then here ...
-
-## Document processing
-
-This document can be processed to HTML using the packages knitr and markdown:
-
-```
-library(knitr);
-knitr::knit2html('template.Rmd',output='report.md');
-### which should create a file report.html in your current directory
-```
-
-If you work on a Unix system We can as well create a bash script and place it into your personal bin folder.
-
-```
-#!/usr/bin/env bash
-function rmd2html {
-  if [ -z $1 ]; then
-    echo "Usage: rmd2html RMDFILE"
-  else
-    echo "library(knitr);knitr::knit2html('$1');" | Rscript -
-  fi
-}
-# delegate arguments to the function
-rmd2html "$@"
-```
-
-If you have the rmarkdown package and pandoc installed you can do this:
-
-```
-library(rmarkdown);
-rmarkdown::render('template.Rmd',html_document())
-```
-
-My rmarkdown package is currently broken more features, more often problems ...
+# Appendix
 
