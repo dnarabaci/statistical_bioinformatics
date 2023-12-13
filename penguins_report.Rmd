@@ -70,13 +70,19 @@ tab = table(penguins$species, penguins$island)
 ```{r tab}
 knitr::kable(tab,caption = "The number of penguin species on the three islands.", "pipe", align = "ccc")
 ```
+`
 ```{r}
 #On Gentoos
 Gentoo=penguins[penguins$species=="Gentoo",]
+
 male=Gentoo[Gentoo$sex=="male",]
 female=Gentoo[Gentoo$sex=="female",]
 #Gentoo number of males and females
 
+```
+```{r}
+#to clean up data and replace NAs with mean values, WIP
+mean_bill_depth = as.double(round(mean(Gentoo$bill_depth_mm, na.rm = TRUE)))
 ```
 
 The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
@@ -124,7 +130,26 @@ legend(x="center", ncol=2,legend=c("Male","Female"),
 
 # Statistical Analysis
 
-`r lipsum(2,paragraphs=1)`
+```{r}
+#check if data is normally distributed
+par(mfrow = c(2,2))
+hist(male$bill_length_mm)
+hist(female$bill_length_mm)
+hist(male$bill_depth_mm)
+hist(female$bill_depth_mm)
+
+```
+```{r}
+bl_m = shapiro.test(male$bill_length_mm)
+bl_f = shapiro.test(female$bill_length_mm)
+bd_m = shapiro.test(male$bill_depth_mm)
+bd_f = shapiro.test(female$bill_depth_mm)
+#(p<0.05 means not normally distributed)
+s_ps = round(c(bl_m$p.value, bl_f$p.value, bd_m$p.value, bd_f$p.value), digits = 2)
+
+```
+Shapiro-Wilk normality test was performed on male and female bill length and bill depth data. The p values for bill length distributions for males and females respectively were `r s_ps[1]` and `r s_ps[2]` respectively; and the p values for bill depth distributions for males and females were `r s_ps[3]` and `r s_ps[4]`, respectively. 
+Shapiro-Wilk normality tests for combined bill depth and bill length have shown p values of `r round(shapiro.test(Gentoo$bill_depth_mm)$p.value, digits=2)` and `r round(shapiro.test(Gentoo$bill_length_mm)$p.value, digits=2)`, both less than 0.05, suggesting non-normal distribution.
 
 # Results
 
