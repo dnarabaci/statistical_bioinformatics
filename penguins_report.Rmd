@@ -13,6 +13,8 @@ output:
   bookdown::html_document2:
   number_sections: TRUE
   fig_caption: TRUE
+  toc: true
+  toc_depth: 2
 
 ---
 
@@ -48,7 +50,7 @@ knitr::write_bib(c(.packages(), packages), "packages.bib")
 
 # Introduction
 
-`r lipsum(2,paragraphs=1, lang="english")`
+`r lipsum(1,paragraphs=1, lang="english")`
 
 # Data and Methods
 
@@ -66,10 +68,59 @@ tab = table(penguins$species, penguins$island)
 ```
 
 ```{r tab}
-knitr::kable(tab,caption = "The number of penguin species on the three islands.")
+knitr::kable(tab,caption = "The number of penguin species on the three islands.", "pipe", align = "ccc")
+```
+```{r}
+#On Gentoos
+Gentoo=penguins[penguins$species=="Gentoo",]
+male=Gentoo[Gentoo$sex=="male",]
+female=Gentoo[Gentoo$sex=="female",]
+#Gentoo number of males and females
+
 ```
 
 The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
+
+```{r}
+#Defining color variables here so that they are consistent and can be changed easily later on
+color_f = "violet"
+color_m  = "steelblue2"
+```
+
+```{r, fig.cap="Measurements for Gentoo males and females"}
+ggplot(Gentoo, aes(x =bill_depth_mm  , y = bill_length_mm , color = sex))+
+  geom_point() +
+  labs(
+    #title = "Bill depth and length",
+    #subtitle = "Measurements for Gentoo males and females",
+    x = "Bill depth (mm)", y = "Bill length(mm)",
+    legend = "Sex",
+  ) +
+  scale_color_manual(values=c(color_f,color_m))
+
+```
+
+```{r}
+cWeight=cut(Gentoo$body_mass_g,breaks=quantile(Gentoo$body_mass_g,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
+levels(cWeight)=c("Light","Medium","Heavy")
+weight_cat = table(cWeight, Gentoo$sex)
+colnames(weight_cat) = c("Female", "Male")
+```
+```{r}
+knitr::kable(weight_cat, caption = "Number of Gentoos in each weight category", "pipe", align = "ccc") 
+```
+
+```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$body_mass_g ~ sex,col=c(color_f, color_m), ylab="Body Mass (in g)"))
+barplot(t(weight_cat),xlab="Weight Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins body weight by sex")
+```
 
 # Statistical Analysis
 
