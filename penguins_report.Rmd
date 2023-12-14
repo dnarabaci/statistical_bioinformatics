@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message = FALSE, tidy = TRUE)
 
 ```{r label=loading,results="hide"}
 # Packages
-packages <- c("palmerpenguins", "ggplot2", "knitr", "tidyverse", "lsr", "bookdown")
+packages <- c("palmerpenguins", "ggplot2", "knitr", "tidyverse", "lsr", "bookdown", "vcd")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
@@ -36,15 +36,21 @@ if (any(installed_packages == FALSE)) {
 invisible(lapply(packages, library, character.only = TRUE))
 
 source("arabaci2_lipsum.R")
+source("sbi.R")
 
 #Create citations for packages used
 knitr::write_bib(c(.packages(), packages), "packages.bib")
 ```
 
-# Abstract
+
+-------------------------------------------------------------
+
+**Abstract**
+`r lipsum(2,paragraphs=1, lang="english")`
+
+-------------------------------------------------------------
 
 <div id="abstract">
-`r lipsum(2,paragraphs=1, lang="english")`
 </div>
 <br>
 
@@ -52,7 +58,10 @@ knitr::write_bib(c(.packages(), packages), "packages.bib")
 
 `r lipsum(1,paragraphs=1, lang="english")`
 
-# Data and Methods
+# Data
+
+palmerpenguins package
+
 
 ## General information about Palmer Penguins data
 ```{r}
@@ -70,7 +79,17 @@ tab = table(penguins$species, penguins$island)
 ```{r tab}
 knitr::kable(tab,caption = "The number of penguin species on the three islands.", "pipe", align = "ccc")
 ```
-`
+
+# Statistical Analysis
+
+alpha chosen as 0.05
+Used in 3x2 tables, Cramer's V values for effect size (ES) <0.10 were considered weakly associated, 0.1 < ES ≤ 0.5 was considered moderately associated, and ES > 0.5 was considered strongly associated.
+Fisher's Exact test was chosen because some data cells were ≤ 5.
+
+--------------------------- 
+
+# Results
+
 ```{r}
 #On Gentoos
 Gentoo=penguins[penguins$species=="Gentoo",]
@@ -87,10 +106,22 @@ mean_bill_depth = as.double(round(mean(Gentoo$bill_depth_mm, na.rm = TRUE)))
 
 The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
 
+----------------------------------------------------
+Maybe add mean, median, sd, max and min for features
+To Do: 
+- center (modus)
+- spread (proportions)/variance
+- skewness (positive value skewness to right, negative value: skewness to left, around 0: symmetrical)
+- kurtosis
+
+- testing, effect size calculation and cohens w
+
+--------------------------------------------------------
+
 ```{r}
 #Defining color variables here so that they are consistent and can be changed easily later on
-color_f = "violet"
-color_m  = "steelblue2"
+color_f = "hotpink2"
+color_m  = "skyblue"
 ```
 
 ```{r, fig.cap="Measurements for Gentoo males and females"}
@@ -116,6 +147,8 @@ colnames(weight_cat) = c("Female", "Male")
 knitr::kable(weight_cat, caption = "Number of Gentoos in each weight category", "pipe", align = "ccc") 
 ```
 
+## Gentoo penguin body weight distribution
+
 ```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
 layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
 
@@ -128,17 +161,76 @@ legend(x="center", ncol=2,legend=c("Male","Female"),
        fill=c(color_m, color_f), title="Penguins body weight by sex")
 ```
 
-# Statistical Analysis
+```{r}
+cDepthBill=cut(Gentoo$bill_depth_mm,breaks=quantile(Gentoo$bill_depth_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
+levels(cDepthBill)=c("Shallow","Medium","Deep")
+bdepth_cat = table(cDepthBill, Gentoo$sex)
+colnames(bdepth_cat) = c("Female", "Male")
+```
+```{r}
+knitr::kable(bdepth_cat, caption = "Number of Gentoos in each Bill Depth category", "pipe", align = "ccc") 
+```
+
+```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$bill_depth_mm ~ sex,col=c(color_f, color_m), ylab="Bill Depth (in mm)"))
+barplot(t(bdepth_cat),xlab="Bill Depth Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins bill depth by sex")
+```
+```{r}
+cLengthBill=cut(Gentoo$bill_length_mm,breaks=quantile(Gentoo$bill_length_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
+levels(cLengthBill)=c("Shallow","Medium","Deep")
+blength_cat = table(cLengthBill, Gentoo$sex)
+colnames(blength_cat) = c("Female", "Male")
+```
+```{r}
+knitr::kable(blength_cat, caption = "Number of Gentoos in each Bill Length category", "pipe", align = "ccc") 
+```
+
+```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$bill_length_mm ~ sex,col=c(color_f, color_m), ylab="Bill Length (in mm)"))
+barplot(t(blength_cat),xlab="Bill Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins bill length by sex")
+```
+
+
+For inferential statistics, we first consider distribution of data (normal or non-normal) and number of categories. (paired or unpaired?). 
 
 ```{r}
 #check if data is normally distributed
-par(mfrow = c(2,2))
-hist(male$bill_length_mm)
-hist(female$bill_length_mm)
-hist(male$bill_depth_mm)
-hist(female$bill_depth_mm)
+par(mfrow = c(2,4), mai = c(0.6, 0.2, 0.5, 0.2))
+hist(male$body_mass_g, xlab = "Male Body Mass (g)", main = "Male Body Mass", col=color_m, border="black")
+hist(female$body_mass_g, xlab = "Female Body Mass (g)", main = "Female Body Mass", col=color_f, border="black")
 
+hist(male$bill_length_mm, xlab = "Male Bill Length (mm)", main = "Male Bill Length", col=color_m, border="black")
+hist(female$bill_length_mm, xlab = "Female Bill Length (mm)", main = "Female Bill Length", col=color_f, border="black")
+
+hist(male$bill_depth_mm, xlab = "Male Bill Depth (mm)", main = "Male Bill Depth", col=color_m, border="black")
+hist(female$bill_depth_mm, xlab = "Female Bill Depth (mm)", main = "Female Bill Depth", col=color_f, border="black")
+
+hist(male$flipper_length_mm, xlab = "Male Flipper Length (mm)", main = "Male Flipper Length", col=color_m, border="black")
+hist(female$flipper_length_mm, xlab = "Female Flipper Length (mm)", main = "Female Flipper Length", col=color_f, border="black")
 ```
+
+```{r}
+k.mbl = sbi$kurtosis(male$bill_length_mm)
+k.fbl = sbi$kurtosis(female$bill_length_mm)
+
+s.mbl = sbi$skewness(male$bill_length_mm)
+s.fbl = sbi$skewness(female$bill_length_mm)
+```
+
 ```{r}
 bl_m = shapiro.test(male$bill_length_mm)
 bl_f = shapiro.test(female$bill_length_mm)
@@ -149,11 +241,75 @@ s_ps = round(c(bl_m$p.value, bl_f$p.value, bd_m$p.value, bd_f$p.value), digits =
 
 ```
 Shapiro-Wilk normality test was performed on male and female bill length and bill depth data. The p values for bill length distributions for males and females respectively were `r s_ps[1]` and `r s_ps[2]` respectively; and the p values for bill depth distributions for males and females were `r s_ps[3]` and `r s_ps[4]`, respectively. 
-Shapiro-Wilk normality tests for combined bill depth and bill length have shown p values of `r round(shapiro.test(Gentoo$bill_depth_mm)$p.value, digits=2)` and `r round(shapiro.test(Gentoo$bill_length_mm)$p.value, digits=2)`, both less than 0.05, suggesting non-normal distribution.
+Shapiro-Wilk normality tests for combined bill depth and bill length have shown p values of `r round(shapiro.test(Gentoo$bill_depth_mm)$p.value, digits=2)` and `r round(shapiro.test(Gentoo$bill_length_mm)$p.value, digits=2)`, both less than 0.05, suggesting non-normal distribution.With p<0.05, null hypothesis that they come from normally distributed data is rejected. Thus, a Wilcox test is appropriate.
 
-# Results
+```{r}
+w_weight.p =round(wilcox.test(weight_cat)$p.value, digits=3)
+```
+We conducted a Wilcoxon signed rank test to compare the body mass of Gentoo penguins between sexes. The body mass measurements of female Gentoo penguins were significantly smaller than the male Gentoo measurements (p=`r w_weight.p`).
 
-`r lipsum(2,paragraphs=1)`
+## Association of Body Weight and Sex
+```{r}
+assoc.gentoo_weight = table(Gentoo$sex, cWeight)
+cramersV.gentoo_weight = round(sbi$cramersV(assoc.gentoo_weight), digits=3) #from sbi.R
+```
+
+A Cramer's V test was performed to examine the relationship between sex and body weight in Gentoo penguins. There was a strong influence of the sex on body weight category distribution between all classes p<0.05, Cramer's V is `r cramersV.gentoo_weight`.
+
+```{r}
+dimnames(assoc.gentoo_weight) = list("Sex"=dimnames(assoc.gentoo_weight)[[1]],
+                                     "Penguin Body Mass" = dimnames(assoc.gentoo_weight)[[2]])
+assoc(assoc.gentoo_weight, shade=TRUE)
+
+```
+
+## Association of Bill Depth and Sex
+
+
+```{r}
+assoc.gentoo_bdepth = table(Gentoo$sex, cDepthBill)
+cramersV.gentoo_bdepth = round(sbi$cramersV(assoc.gentoo_bdepth), digits=3) #from sbi.R
+```
+
+Cramer's V is `r cramersV.gentoo_bdepth`.
+
+```{r}
+dimnames(assoc.gentoo_bdepth) = list("Sex"=dimnames(assoc.gentoo_bdepth)[[1]],
+                                     "Penguin Body Mass" = dimnames(assoc.gentoo_bdepth)[[2]])
+assoc(assoc.gentoo_bdepth, shade=TRUE)
+
+```
+
+
+## Association of Bill Length and Sex
+
+```{r}
+assoc.gentoo_blen = table(Gentoo$sex, cLengthBill)
+cramersV.gentoo_blen = round(sbi$cramersV(assoc.gentoo_blen), digits=3) #from sbi.R
+```
+
+
+Cramer's V is `r cramersV.gentoo_blen`.
+
+```{r}
+dimnames(assoc.gentoo_blen) = list("Sex"=dimnames(assoc.gentoo_blen)[[1]],
+                                     "Penguin Body Mass" = dimnames(assoc.gentoo_blen)[[2]])
+assoc(assoc.gentoo_blen, shade=TRUE)
+
+
+```
+
+
+## Summary 
+
+```{r}
+cramersV_list = as.table(c(cramersV.gentoo_weight,cramersV.gentoo_blen, cramersV.gentoo_bdepth))
+rownames(cramersV_list) = c("Body Mass", "Bill Length", "Bill Depth")
+knitr::kable(cramersV_list, col.names = c("", "Cramer's V Values") , caption = "Association of penguin features with sex","pipe", align = "ccc")
+```
+```{r}
+```
+
 
 # Discussion
 
