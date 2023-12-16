@@ -1,5 +1,5 @@
 ---
-title: Sexual Dimorphism of Penguins
+title: An Analysis of Sexual Dimorphism in Gentoo Penguins (Pygoscelis papua)
 author: 
 - name: Duygu Nur Arabaci
   affiliation: Department of Bioinformatics, University of Potsdam, Germany
@@ -11,10 +11,13 @@ nocite: '@*'
 
 output:
   bookdown::html_document2:
+    theme: yeti
+    toc: true
+    toc_depth: 2
   number_sections: TRUE
   fig_caption: TRUE
-  toc: true
-  toc_depth: 2
+
+
 
 ---
 
@@ -46,7 +49,8 @@ knitr::write_bib(c(.packages(), packages), "packages.bib")
 -------------------------------------------------------------
 
 **Abstract**
-`r lipsum(2,paragraphs=1, lang="english")`
+
+This research aims at examining discernible variations in physical traits and behaviors between male and female members of the  Gentoo penguins.
 
 -------------------------------------------------------------
 
@@ -56,7 +60,16 @@ knitr::write_bib(c(.packages(), packages), "packages.bib")
 
 # Introduction
 
-`r lipsum(1,paragraphs=1, lang="english")`
+
+Sexual dimorphism, denoting observable differences in form between male and female individuals of the same species, encompasses a range of attributes such as size, color, and behavioral tendencies. Initially identified by Rensch, who noted a general trend of larger size in males across species, sexual dimorphism primarily arises from sexual selection rather than survival advantage. This study focuses on Gentoo penguins, belonging to the Pygoscelis genus, within the marine ecosystem of the western Antarctic peninsula, exploring their sexual dimorphism with a specific emphasis on body mass, bill features, and flipper dimensions. Vocal signals play a crucial role in Gentoo penguins' reproductive success, with males utilizing an "Ecstatic Display Call" during courtship, identified as a significant indicator of male quality and predictive of reproductive success (Marks, Brunton, & Rodrigo, 2010).
+
+In line with existing literature, Gorman et al.'s 2014 study emphasizes body mass as a strong predictor of sex among Gentoo and Adelie penguins, with culmen length and depth being influential for different species within the Pygoscelis genus. Notably, Chinstrap penguins exhibit the most apparent sexual size dimorphism compared to Adelie and Gentoo penguins (Gorman, K. B., Williams, T. D., & Fraser, W. R., 2014). Adelie penguins, characterized by their exceptional swimming abilities and an average length of 70-73 cm, exhibit sexual dimorphism with larger males, and their average lifespan is around 16 years (Rafferty, 2020a).
+
+Chinstraps, inhabitants of islands around the Southern Pacific and Antarctic oceans, showcase similar sexual dimorphism trends, with males being larger than females and an average lifespan of around 16 years (Rafferty, 2020a). Gentoo penguins, closely related to Adelie penguins, are notable for their larger size, standing 75-95 cm tall, and weighing between 5 to 8.5 kgs. The world's fastest underwater birds, Gentoo males are larger than females, capable of reaching speeds up to 36 km/h (Rafferty 2020c).
+
+All three species of the Pygoscelus genus—Adelie, Chinstrap, and Gentoo—display monogamous behavior, sharing incubation duties during the 5-week period it takes for eggs to hatch. Their reproductive cycles differ slightly, with Gentoo penguins laying eggs in October-November and hatching in February. This project establishes four hypotheses related to Gentoo penguins' sexual dimorphism, examining body mass, bill dimensions, and flipper length, and their potential correlations with reproductive success.
+
+In this paper, our aim is to elucidate the sexual dimorphism of Gentoo penguins. Thus, we will investigate the hypotheses that in Gentoo penguins: (1) body mass is associated with sex , (2) bill length is associated with sex, (3) flipper length is associated with sex.
 
 # Data
 
@@ -90,6 +103,8 @@ Fisher's Exact test was chosen because some data cells were ≤ 5.
 
 # Results
 
+## General statistics of the Gentoo sample
+
 ```{r}
 #On Gentoos
 Gentoo=penguins[penguins$species=="Gentoo",]
@@ -100,23 +115,34 @@ female=Gentoo[Gentoo$sex=="female",]
 
 ```
 ```{r}
-#to clean up data and replace NAs with mean values, WIP
 mean_bill_depth = as.double(round(mean(Gentoo$bill_depth_mm, na.rm = TRUE)))
+mean_bill_length = as.double(round(mean(Gentoo$bill_length_mm, na.rm = TRUE)))
+mean_body_mass = as.double(round(mean(Gentoo$body_mass_g, na.rm = TRUE)))
+mean_flipper_length = as.double(round(mean(Gentoo$flipper_length_mm, na.rm = TRUE)))
+means_gentoo = cbind(mean_body_mass,mean_bill_length ,mean_bill_depth, mean_flipper_length)
+
+means_sexes = as.table(rbind(c(round(mean(Gentoo$body_mass_g, na.rm=TRUE), digit=2), 
+                            round(mean(Gentoo$bill_length_mm, na.rm=TRUE), digit=2), 
+                            round(mean(Gentoo$bill_depth_mm, na.rm=TRUE), digit=2), 
+                            round(mean(Gentoo$flipper_length_mm, na.rm=TRUE), digit=2))
+                            ,c(round(mean(male$body_mass_g, na.rm=TRUE), digit=2), 
+                            round(mean(male$bill_length_mm, na.rm=TRUE), digit=2), 
+                            round(mean(male$bill_depth_mm, na.rm=TRUE), digit=2), 
+                            round(mean(male$flipper_length_mm, na.rm=TRUE), digit=2)), 
+                            c(round(mean(female$body_mass_g, na.rm=TRUE), digit=2), 
+                            round(mean(female$bill_length_mm, na.rm=TRUE, digit=2)), 
+                            round(mean(female$bill_depth_mm, na.rm=TRUE), digit=2), 
+                            round(mean(female$flipper_length_mm, na.rm=TRUE), digit=2))))
+
+rownames(means_sexes)=c("Combined","Male", "Female")
+colnames(means_sexes)=c("Body mass (in g)", "Bill length (in mm)", "Bill depth (in mm)", "Flipper length (in mm)")
+
+knitr::kable(means_sexes)
+
 ```
 
 The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
 
-----------------------------------------------------
-Maybe add mean, median, sd, max and min for features
-To Do: 
-- center (modus)
-- spread (proportions)/variance
-- skewness (positive value skewness to right, negative value: skewness to left, around 0: symmetrical)
-- kurtosis
-
-- testing, effect size calculation and cohens w
-
---------------------------------------------------------
 
 ```{r}
 #Defining color variables here so that they are consistent and can be changed easily later on
@@ -124,18 +150,72 @@ color_f = "hotpink2"
 color_m  = "skyblue"
 ```
 
-```{r, fig.cap="Measurements for Gentoo males and females"}
-ggplot(Gentoo, aes(x =bill_depth_mm  , y = bill_length_mm , color = sex))+
-  geom_point() +
-  labs(
-    #title = "Bill depth and length",
-    #subtitle = "Measurements for Gentoo males and females",
-    x = "Bill depth (mm)", y = "Bill length(mm)",
-    legend = "Sex",
-  ) +
-  scale_color_manual(values=c(color_f,color_m))
 
+
+
+For inferential statistics, we first consider distribution of data (normal or non-normal) and number of categories. (paired or unpaired?). 
+
+```{r}
+#check if data is normally distributed
+par(mfrow = c(2,4), mai = c(0.6, 0.2, 0.5, 0.2))
+hist(male$body_mass_g, xlab = "Male Body Mass (g)", main = "Male Body Mass", col=color_m, border="black")
+hist(female$body_mass_g, xlab = "Female Body Mass (g)", main = "Female Body Mass", col=color_f, border="black")
+
+hist(male$bill_length_mm, xlab = "Male Bill Length (mm)", main = "Male Bill Length", col=color_m, border="black")
+hist(female$bill_length_mm, xlab = "Female Bill Length (mm)", main = "Female Bill Length", col=color_f, border="black")
+
+hist(male$bill_depth_mm, xlab = "Male Bill Depth (mm)", main = "Male Bill Depth", col=color_m, border="black")
+hist(female$bill_depth_mm, xlab = "Female Bill Depth (mm)", main = "Female Bill Depth", col=color_f, border="black")
+
+hist(male$flipper_length_mm, xlab = "Male Flipper Length (mm)", main = "Male Flipper Length", col=color_m, border="black")
+hist(female$flipper_length_mm, xlab = "Female Flipper Length (mm)", main = "Female Flipper Length", col=color_f, border="black")
 ```
+
+```{r}
+k.mbl = sbi$kurtosis(male$bill_length_mm)
+k.fbl = sbi$kurtosis(female$bill_length_mm)
+
+s.mbl = sbi$skewness(male$bill_length_mm)
+s.fbl = sbi$skewness(female$bill_length_mm)
+```
+
+```{r}
+k.mbd = sbi$kurtosis(male$bill_depth_mm)
+k.fbd = sbi$kurtosis(female$bill_depth_mm)
+
+s.mbd = sbi$skewness(male$bill_depth_mm)
+s.fbd = sbi$skewness(female$bill_depth_mm)
+```
+
+```{r}
+k.mfl = sbi$kurtosis(male$flipper_length_mm)
+k.ffl = sbi$kurtosis(female$flipper_length_mm)
+
+s.mfl = sbi$skewness(male$flipper_length_mm)
+s.ffl = sbi$skewness(female$flipper_length_mm)
+```
+
+```{r}
+k.mbm = sbi$kurtosis(male$body_mass_g)
+k.fbm = sbi$kurtosis(female$body_mass_g)
+
+s.mbm = sbi$skewness(male$body_mass_g)
+s.fbm = sbi$skewness(female$body_mass_g)
+```
+
+```{r}
+kurt_skew_summary = as.table(cbind(rbind(c(k.mbm,k.fbm), c(s.mbm, s.fbm)),rbind(c(k.mbd,k.fbd), c(s.mbd, s.fbd)), rbind(c(k.mbl,k.fbl), c(s.mbl, s.fbl)),  rbind(c(k.mfl,k.ffl), c(s.mfl, s.ffl))))
+colnames(kurt_skew_summary) = c("Male Body Mass","Female Body Mass","Male Bill Depth","Female Bill Depth",  "Male Bill Length","Female Bill Length", "Male Flipper Length","Female Flipper Length")
+rownames(kurt_skew_summary) = c("Kurtosis","Skewness")
+
+knitr::kable(
+  kurt_skew_summary, 
+  caption = "Summary of Gentoo Features Data Distribution Description", 
+  "pipe", 
+  align = "ccccccccc", 
+  digits = 2) 
+```
+
 
 ```{r}
 cWeight=cut(Gentoo$body_mass_g,breaks=quantile(Gentoo$body_mass_g,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
@@ -171,7 +251,7 @@ colnames(bdepth_cat) = c("Female", "Male")
 knitr::kable(bdepth_cat, caption = "Number of Gentoos in each Bill Depth category", "pipe", align = "ccc") 
 ```
 
-```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+```{r fig.width=7,fig.height=5, fig.cap="Bill Depth of Males and Females"}
 layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
 
 with(Gentoo,boxplot(Gentoo$bill_depth_mm ~ sex,col=c(color_f, color_m), ylab="Bill Depth (in mm)"))
@@ -192,7 +272,7 @@ colnames(blength_cat) = c("Female", "Male")
 knitr::kable(blength_cat, caption = "Number of Gentoos in each Bill Length category", "pipe", align = "ccc") 
 ```
 
-```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+```{r fig.width=7,fig.height=5, fig.cap="Bill Length of Males and Females"}
 layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
 
 with(Gentoo,boxplot(Gentoo$bill_length_mm ~ sex,col=c(color_f, color_m), ylab="Bill Length (in mm)"))
@@ -203,33 +283,28 @@ plot.new()
 legend(x="center", ncol=2,legend=c("Male","Female"),
        fill=c(color_m, color_f), title="Penguins bill length by sex")
 ```
-
-
-For inferential statistics, we first consider distribution of data (normal or non-normal) and number of categories. (paired or unpaired?). 
-
 ```{r}
-#check if data is normally distributed
-par(mfrow = c(2,4), mai = c(0.6, 0.2, 0.5, 0.2))
-hist(male$body_mass_g, xlab = "Male Body Mass (g)", main = "Male Body Mass", col=color_m, border="black")
-hist(female$body_mass_g, xlab = "Female Body Mass (g)", main = "Female Body Mass", col=color_f, border="black")
-
-hist(male$bill_length_mm, xlab = "Male Bill Length (mm)", main = "Male Bill Length", col=color_m, border="black")
-hist(female$bill_length_mm, xlab = "Female Bill Length (mm)", main = "Female Bill Length", col=color_f, border="black")
-
-hist(male$bill_depth_mm, xlab = "Male Bill Depth (mm)", main = "Male Bill Depth", col=color_m, border="black")
-hist(female$bill_depth_mm, xlab = "Female Bill Depth (mm)", main = "Female Bill Depth", col=color_f, border="black")
-
-hist(male$flipper_length_mm, xlab = "Male Flipper Length (mm)", main = "Male Flipper Length", col=color_m, border="black")
-hist(female$flipper_length_mm, xlab = "Female Flipper Length (mm)", main = "Female Flipper Length", col=color_f, border="black")
+cLengthFlipper=cut(Gentoo$flipper_length_mm,breaks=quantile(Gentoo$flipper_length_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
+levels(cLengthFlipper)=c("Small","Medium","Large")
+flength_cat = table(cLengthFlipper, Gentoo$sex)
+colnames(flength_cat) = c("Female", "Male")
+```
+```{r}
+knitr::kable(flength_cat, caption = "Number of Gentoos in each Flipper Length category", "pipe", align = "ccc") 
 ```
 
-```{r}
-k.mbl = sbi$kurtosis(male$bill_length_mm)
-k.fbl = sbi$kurtosis(female$bill_length_mm)
+```{r fig.width=7,fig.height=5, fig.cap="Flipper Length of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
 
-s.mbl = sbi$skewness(male$bill_length_mm)
-s.fbl = sbi$skewness(female$bill_length_mm)
+with(Gentoo,boxplot(Gentoo$flipper_length_mm ~ sex,col=c(color_f, color_m), ylab="Flipper Length (in mm)"))
+barplot(t(flength_cat),xlab="Flipper Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins flipper length by sex")
 ```
+
 
 ```{r}
 bl_m = shapiro.test(male$bill_length_mm)
@@ -254,7 +329,7 @@ assoc.gentoo_weight = table(Gentoo$sex, cWeight)
 cramersV.gentoo_weight = round(sbi$cramersV(assoc.gentoo_weight), digits=3) #from sbi.R
 ```
 
-A Cramer's V test was performed to examine the relationship between sex and body weight in Gentoo penguins. There was a strong influence of the sex on body weight category distribution between all classes p<0.05, Cramer's V is `r cramersV.gentoo_weight`.
+A Cramer's V test was performed to examine the relationship between sex and body weight in Gentoo penguins. There was a strong influence of the sex on body weight category distribution between all weight classes p<0.05, Cramer's V is `r cramersV.gentoo_weight`.
 
 ```{r}
 dimnames(assoc.gentoo_weight) = list("Sex"=dimnames(assoc.gentoo_weight)[[1]],
@@ -295,8 +370,6 @@ Cramer's V is `r cramersV.gentoo_blen`.
 dimnames(assoc.gentoo_blen) = list("Sex"=dimnames(assoc.gentoo_blen)[[1]],
                                      "Penguin Body Mass" = dimnames(assoc.gentoo_blen)[[2]])
 assoc(assoc.gentoo_blen, shade=TRUE)
-
-
 ```
 
 
@@ -307,6 +380,12 @@ cramersV_list = as.table(c(cramersV.gentoo_weight,cramersV.gentoo_blen, cramersV
 rownames(cramersV_list) = c("Body Mass", "Bill Length", "Bill Depth")
 knitr::kable(cramersV_list, col.names = c("", "Cramer's V Values") , caption = "Association of penguin features with sex","pipe", align = "ccc")
 ```
+
+```{r fig.width=7,fig.height=5, fig.cap="Paired up association of Gentoo features Summary"}
+par(mai = c(0.5,0.5,0.5,0.5))
+pairs(~ bill_length_mm+ bill_depth_mm + body_mass_g + flipper_length_mm ,data = Gentoo,col = c(color_m, color_f) )
+```
+
 ```{r}
 ```
 
