@@ -218,28 +218,13 @@ knitr::kable(
 
 
 ```{r}
+#defining the tables 
 cWeight=cut(Gentoo$body_mass_g,breaks=quantile(Gentoo$body_mass_g,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
 levels(cWeight)=c("Light","Medium","Heavy")
 weight_cat = table(cWeight, Gentoo$sex)
 colnames(weight_cat) = c("Female", "Male")
 ```
-```{r}
-knitr::kable(weight_cat, caption = "Number of Gentoos in each weight category", "pipe", align = "ccc") 
-```
 
-## Gentoo penguin body weight distribution
-
-```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
-layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
-
-with(Gentoo,boxplot(Gentoo$body_mass_g ~ sex,col=c(color_f, color_m), ylab="Body Mass (in g)"))
-barplot(t(weight_cat),xlab="Weight Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
-
-par(mai=c(0,0,0,0))
-plot.new()
-legend(x="center", ncol=2,legend=c("Male","Female"),
-       fill=c(color_m, color_f), title="Penguins body weight by sex")
-```
 
 ```{r}
 cDepthBill=cut(Gentoo$bill_depth_mm,breaks=quantile(Gentoo$bill_depth_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
@@ -247,63 +232,21 @@ levels(cDepthBill)=c("Shallow","Medium","Deep")
 bdepth_cat = table(cDepthBill, Gentoo$sex)
 colnames(bdepth_cat) = c("Female", "Male")
 ```
-```{r}
-knitr::kable(bdepth_cat, caption = "Number of Gentoos in each Bill Depth category", "pipe", align = "ccc") 
-```
 
-```{r fig.width=7,fig.height=5, fig.cap="Bill Depth of Males and Females"}
-layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
-
-with(Gentoo,boxplot(Gentoo$bill_depth_mm ~ sex,col=c(color_f, color_m), ylab="Bill Depth (in mm)"))
-barplot(t(bdepth_cat),xlab="Bill Depth Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
-
-par(mai=c(0,0,0,0))
-plot.new()
-legend(x="center", ncol=2,legend=c("Male","Female"),
-       fill=c(color_m, color_f), title="Penguins bill depth by sex")
-```
 ```{r}
 cLengthBill=cut(Gentoo$bill_length_mm,breaks=quantile(Gentoo$bill_length_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
 levels(cLengthBill)=c("Shallow","Medium","Deep")
 blength_cat = table(cLengthBill, Gentoo$sex)
 colnames(blength_cat) = c("Female", "Male")
 ```
-```{r}
-knitr::kable(blength_cat, caption = "Number of Gentoos in each Bill Length category", "pipe", align = "ccc") 
-```
 
-```{r fig.width=7,fig.height=5, fig.cap="Bill Length of Males and Females"}
-layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
-
-with(Gentoo,boxplot(Gentoo$bill_length_mm ~ sex,col=c(color_f, color_m), ylab="Bill Length (in mm)"))
-barplot(t(blength_cat),xlab="Bill Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
-
-par(mai=c(0,0,0,0))
-plot.new()
-legend(x="center", ncol=2,legend=c("Male","Female"),
-       fill=c(color_m, color_f), title="Penguins bill length by sex")
-```
 ```{r}
 cLengthFlipper=cut(Gentoo$flipper_length_mm,breaks=quantile(Gentoo$flipper_length_mm,c(0,1/3,2/3,1),na.rm=TRUE),include.lowest=TRUE)
 levels(cLengthFlipper)=c("Small","Medium","Large")
 flength_cat = table(cLengthFlipper, Gentoo$sex)
 colnames(flength_cat) = c("Female", "Male")
 ```
-```{r}
-knitr::kable(flength_cat, caption = "Number of Gentoos in each Flipper Length category", "pipe", align = "ccc") 
-```
 
-```{r fig.width=7,fig.height=5, fig.cap="Flipper Length of Males and Females"}
-layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
-
-with(Gentoo,boxplot(Gentoo$flipper_length_mm ~ sex,col=c(color_f, color_m), ylab="Flipper Length (in mm)"))
-barplot(t(flength_cat),xlab="Flipper Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
-
-par(mai=c(0,0,0,0))
-plot.new()
-legend(x="center", ncol=2,legend=c("Male","Female"),
-       fill=c(color_m, color_f), title="Penguins flipper length by sex")
-```
 
 
 ```{r}
@@ -324,12 +267,36 @@ w_weight.p =round(wilcox.test(weight_cat)$p.value, digits=3)
 We conducted a Wilcoxon signed rank test to compare the body mass of Gentoo penguins between sexes. The body mass measurements of female Gentoo penguins were significantly smaller than the male Gentoo measurements (p=`r w_weight.p`).
 
 ## Association of Body Weight and Sex
+
+```{r}
+knitr::kable(weight_cat, caption = "Number of Gentoos in each weight category", "pipe", align = "ccc") 
+```
+
+Since some cells in the contingency tables are <5, fisher's exact test was appropriate to determine relation.
+
+```{r}
+fisher.body_weight_sex.p = fisher.test(weight_cat)$p.value
+```
+We conducted a Fisher's Exact Test for Count Data to determine dependence between body mass and sex of Gentoo penguins. The results showed significant dependance, p<0.0001. 
+
+
+```{r fig.width=7,fig.height=5, fig.cap="Body Mass of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$body_mass_g ~ sex,col=c(color_f, color_m), ylab="Body Mass (in g)"))
+barplot(t(weight_cat),xlab="Weight Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins body weight by sex")
+```
 ```{r}
 assoc.gentoo_weight = table(Gentoo$sex, cWeight)
 cramersV.gentoo_weight = round(sbi$cramersV(assoc.gentoo_weight), digits=3) #from sbi.R
 ```
 
-A Cramer's V test was performed to examine the relationship between sex and body weight in Gentoo penguins. There was a strong influence of the sex on body weight category distribution between all weight classes p<0.05, Cramer's V is `r cramersV.gentoo_weight`.
+A Cramer's V test was performed to examine the relationship between sex and body weight in Gentoo penguins and determine the effect size. There was a strong influence of the sex on body weight category distribution between all weight classes p<0.05, Cramer's V is `r cramersV.gentoo_weight`.
 
 ```{r}
 dimnames(assoc.gentoo_weight) = list("Sex"=dimnames(assoc.gentoo_weight)[[1]],
@@ -340,6 +307,18 @@ assoc(assoc.gentoo_weight, shade=TRUE)
 
 ## Association of Bill Depth and Sex
 
+```{r}
+knitr::kable(bdepth_cat, caption = "Number of Gentoos in each Bill Depth category", "pipe", align = "ccc") 
+```
+
+Since some cells in the contingency tables are <5, fisher's exact test was appropriate to determine relation.
+
+```{r}
+fisher.bill_depth_sex = fisher.test(bdepth_cat)
+```
+We conducted a Fisher's Exact Test for Count Data to determine dependence between bill depth and sex of Gentoo penguins. The results showed significant dependance, p<0.0001. 
+
+
 
 ```{r}
 assoc.gentoo_bdepth = table(Gentoo$sex, cDepthBill)
@@ -348,15 +327,49 @@ cramersV.gentoo_bdepth = round(sbi$cramersV(assoc.gentoo_bdepth), digits=3) #fro
 
 Cramer's V is `r cramersV.gentoo_bdepth`.
 
+```{r fig.width=7,fig.height=5, fig.cap="Bill Depth of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$bill_depth_mm ~ sex,col=c(color_f, color_m), ylab="Bill Depth (in mm)"))
+barplot(t(bdepth_cat),xlab="Bill Depth Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins bill depth by sex")
+```
+
 ```{r}
 dimnames(assoc.gentoo_bdepth) = list("Sex"=dimnames(assoc.gentoo_bdepth)[[1]],
-                                     "Penguin Body Mass" = dimnames(assoc.gentoo_bdepth)[[2]])
+                                     "Penguin Bill Depth" = dimnames(assoc.gentoo_bdepth)[[2]])
 assoc(assoc.gentoo_bdepth, shade=TRUE)
 
 ```
 
 
 ## Association of Bill Length and Sex
+
+```{r}
+knitr::kable(blength_cat, caption = "Number of Gentoos in each Bill Length category", "pipe", align = "ccc") 
+```
+Since some cells in the contingency tables are <5, fisher's exact test was appropriate to determine relation.
+
+```{r}
+fisher.bill_length_sex = fisher.test(blength_cat)
+```
+We conducted a Fisher's Exact Test for Count Data to determine dependence between bill length and sex of Gentoo penguins. The results showed significant dependance, p<0.0001. 
+
+```{r fig.width=7,fig.height=5, fig.cap="Bill Length of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$bill_length_mm ~ sex,col=c(color_f, color_m), ylab="Bill Length (in mm)"))
+barplot(t(blength_cat),xlab="Bill Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins bill length by sex")
+```
 
 ```{r}
 assoc.gentoo_blen = table(Gentoo$sex, cLengthBill)
@@ -368,17 +381,54 @@ Cramer's V is `r cramersV.gentoo_blen`.
 
 ```{r}
 dimnames(assoc.gentoo_blen) = list("Sex"=dimnames(assoc.gentoo_blen)[[1]],
-                                     "Penguin Body Mass" = dimnames(assoc.gentoo_blen)[[2]])
+                                     "Penguin Bill Length" = dimnames(assoc.gentoo_blen)[[2]])
 assoc(assoc.gentoo_blen, shade=TRUE)
+```
+## Flipper Length and Sex
+
+```{r}
+knitr::kable(flength_cat, caption = "Number of Gentoos in each Flipper Length category", "pipe", align = "ccc") 
+```
+Since some cells in the contingency tables are <5, fisher's exact test was appropriate to determine relation.
+
+```{r}
+fisher.flipper_length_sex = fisher.test(flength_cat)
+```
+We conducted a Fisher's Exact Test for Count Data to determine dependence between bill depth and sex of Gentoo penguins. The results showed significant dependance, p<0.0001. 
+
+```{r fig.width=7,fig.height=5, fig.cap="Flipper Length of Males and Females"}
+layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
+
+with(Gentoo,boxplot(Gentoo$flipper_length_mm ~ sex,col=c(color_f, color_m), ylab="Flipper Length (in mm)"))
+barplot(t(flength_cat),xlab="Flipper Length Categories", ylab = "Number of Penguins", col=c(color_f, color_m))
+
+par(mai=c(0,0,0,0))
+plot.new()
+legend(x="center", ncol=2,legend=c("Male","Female"),
+       fill=c(color_m, color_f), title="Penguins flipper length by sex")
+```
+
+```{r}
+assoc.gentoo_flength = table(Gentoo$sex, cLengthFlipper)
+cramersV.gentoo_flength = round(sbi$cramersV(assoc.gentoo_flength), digits=3) #from sbi.R
+```
+
+Cramer's V is `r cramersV.gentoo_flength`.
+
+```{r}
+dimnames(assoc.gentoo_flength) = list("Sex"=dimnames(assoc.gentoo_flength)[[1]],
+                                     "Penguin Flipper Length" = dimnames(assoc.gentoo_flength)[[2]])
+assoc(assoc.gentoo_flength, shade=TRUE)
+
 ```
 
 
 ## Summary 
 
 ```{r}
-cramersV_list = as.table(c(cramersV.gentoo_weight,cramersV.gentoo_blen, cramersV.gentoo_bdepth))
-rownames(cramersV_list) = c("Body Mass", "Bill Length", "Bill Depth")
-knitr::kable(cramersV_list, col.names = c("", "Cramer's V Values") , caption = "Association of penguin features with sex","pipe", align = "ccc")
+cramersV_list = as.table(c(cramersV.gentoo_weight,cramersV.gentoo_blen, cramersV.gentoo_bdepth, cramersV.gentoo_flength))
+rownames(cramersV_list) = c("Body Mass", "Bill Length", "Bill Depth", "Flipper Length")
+knitr::kable(cramersV_list, col.names = c("", "Cramer's V Values") , caption = "Association of penguin features with sex","pipe", align = "lccc")
 ```
 
 ```{r fig.width=7,fig.height=5, fig.cap="Paired up association of Gentoo features Summary"}
