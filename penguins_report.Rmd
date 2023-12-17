@@ -95,11 +95,11 @@ knitr::kable(tab,caption = "The number of penguin species on the three islands."
 
 # Statistical Analysis
 
-alpha chosen as 0.05
-Used in 3x2 tables, Cramer's V values for effect size (ES) <0.10 were considered weakly associated, 0.1 < ES ≤ 0.5 was considered moderately associated, and ES > 0.5 was considered strongly associated.
-Fisher's Exact test was chosen because some data cells were ≤ 5.
+In this report, we chose α=0.05 as significance threshold. Data distribution normality was investigated with histograms and Shapiro-Wilkes normality test. Kurtosis and skewness of distributions of penguin features were examined across sexes. Due to non-normal distribution of data, Wilcoxon test was chosen to investigate the difference of means between males and females.
 
---------------------------- 
+We categorized each feature into three categories and compared them in 3x2 contingency tables. To investigate dependence between sex and body mass, bill length, bill depth and flipper length in categorical format, Fisher's Exact test was chosen over χ2 because some frequencies in the data were ≤ 5. To elucidate effect size, Cramer's V values were determined. Used in 3x2 tables, Cramer's V values for effect size (ES) <0.10 were considered weakly associated, 0.1 < ES ≤ 0.5 was considered moderately associated, and ES > 0.5 was considered strongly associated. For association strength, Pearson residuals were calculated.
+
+
 
 # Results
 
@@ -317,7 +317,6 @@ Since some cells in the contingency tables are <5, fisher's exact test was appro
 fisher.bill_depth_sex = fisher.test(bdepth_cat)
 ```
 We conducted a Fisher's Exact Test for Count Data to determine dependence between bill depth and sex of Gentoo penguins. The results showed significant dependance, p<0.0001. 
-
 
 
 ```{r}
