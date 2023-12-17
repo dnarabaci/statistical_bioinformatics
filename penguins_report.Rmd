@@ -151,8 +151,6 @@ color_m  = "skyblue"
 ```
 
 
-
-
 For inferential statistics, we first consider distribution of data (normal or non-normal) and number of categories. (paired or unpaired?). 
 
 ```{r}
@@ -257,14 +255,31 @@ bd_f = shapiro.test(female$bill_depth_mm)
 #(p<0.05 means not normally distributed)
 s_ps = round(c(bl_m$p.value, bl_f$p.value, bd_m$p.value, bd_f$p.value), digits = 2)
 
+bw_m = shapiro.test(male$body_mass_g)$p.value
+bw_f = shapiro.test(female$body_mass_g)$p.value
+
+fl_m = shapiro.test(male$flipper_length_mm)$p.value
+fl_f = shapiro.test(female$flipper_length_mm)$p.value
+
 ```
-Shapiro-Wilk normality test was performed on male and female bill length and bill depth data. The p values for bill length distributions for males and females respectively were `r s_ps[1]` and `r s_ps[2]` respectively; and the p values for bill depth distributions for males and females were `r s_ps[3]` and `r s_ps[4]`, respectively. 
-Shapiro-Wilk normality tests for combined bill depth and bill length have shown p values of `r round(shapiro.test(Gentoo$bill_depth_mm)$p.value, digits=2)` and `r round(shapiro.test(Gentoo$bill_length_mm)$p.value, digits=2)`, both less than 0.05, suggesting non-normal distribution.With p<0.05, null hypothesis that they come from normally distributed data is rejected. Thus, a Wilcox test is appropriate.
+
+Shapiro-Wilk normality test was performed on body mass, bill length, bill depth and flipper length data. The p values for bill length distributions for males and females respectively were `r s_ps[1]` and `r s_ps[2]` respectively; and the p values for bill depth distributions for males and females were `r s_ps[3]` and `r s_ps[4]`, respectively. The test yielded  `r round(bw_m, digits = 2)` and `r round(bw_f, digits = 2)` for male and female body mass distributions, respectively.
+
+For flipper length, p values were `r round(fl_m, digits = 2)` and `r round(fl_f, digits = 2)` for male and females, respectively.
+ With p<0.05, null hypothesis that they come from normally distributed data is rejected. Since the data is unpaired, Mann-Whitney U test was appropriate.
+ 
 
 ```{r}
-w_weight.p =round(wilcox.test(weight_cat)$p.value, digits=3)
+w_weight.p =round(wilcox.test(weight_cat, paired = FALSE)$p.value, digits=3)
 ```
-We conducted a Wilcoxon signed rank test to compare the body mass of Gentoo penguins between sexes. The body mass measurements of female Gentoo penguins were significantly smaller than the male Gentoo measurements (p=`r w_weight.p`).
+We conducted an unpaired Wilcoxon signed rank test (or Mann-Whitney U test) to compare the body mass of Gentoo penguins between sexes. The body mass measurements of female Gentoo penguins were significantly smaller than the male Gentoo measurements (p=`r w_weight.p`). Bill length(p<0.05), bill depth (p<0.05) and flipper length (p<0.05) were also found significantly differing among males and females.
+
+```{r}
+w_blength.p = round(wilcox.test(blength_cat)$p.value, digits=3)
+w_bdepth.p = round(wilcox.test(bdepth_cat)$p.value, digits=3)
+w_flength.p = round(wilcox.test(flength_cat)$p.value, digits=3)
+```
+
 
 ## Association of Body Weight and Sex
 
