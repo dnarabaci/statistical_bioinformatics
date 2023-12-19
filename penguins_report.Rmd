@@ -50,7 +50,7 @@ knitr::write_bib(c(.packages(), packages), "packages.bib")
 
 **Abstract**
 
-This research aims at examining discernible variations in physical traits and behaviors between male and female members of the  Gentoo penguins.
+This research aimed at examining discernible variations in physical traits between male and female members of the Gentoo penguins (Pygoscelis papua). Measurements of body mass, bill length, bill depth and flipper length were considered for sexual dimorphism. Shapiro Wilk test revealed male bill length (p<0.05) and male flipper length (p<0.05) to be non-normally distributed. Fisher's Exact Test revealed significant difference of traits among sexes (p<0.0001). Strong effect size of sex on body mass (Cramer’s V = 0.79), bill length (Cramer’s V = 0.65), and bill depth (Cramer's V = 0.72) and flipper length (Cramer's V = 0.71). Pearson residuals showed strong association between sex and these four traits, body mass and bill length were the strongest.
 
 -------------------------------------------------------------
 
@@ -73,10 +73,16 @@ In this paper, our aim is to elucidate the sexual dimorphism of Gentoo penguins.
 
 # Data
 
-palmerpenguins package
+The dataset used in this paper is from palmerpenguins package. The data was sampled by Dr. Kristen Gorman in Palmer Station, Antarctica LTER, as part of “Palmer Station Long Term Ecological Research Program”. The dataset includes 3 different species of penguins, collected from 3 islands in the Palmer Archipelago, Antarctica.
 
 
-## General information about Palmer Penguins data
+
+```{r}
+#Defining color variables here so that they are consistent and can be changed easily later on
+color_f = "hotpink2"
+color_m  = "skyblue"
+```
+
 ```{r}
 penguins=as.data.frame(penguins)
 #number of penguins
@@ -93,17 +99,9 @@ tab = table(penguins$species, penguins$island)
 knitr::kable(tab,caption = "The number of penguin species on the three islands.", "pipe", align = "ccc")
 ```
 
-# Statistical Analysis
+The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
 
-In this report, we chose α=0.05 as significance threshold. Data distribution normality was investigated with histograms and Shapiro-Wilkes normality test. Kurtosis and skewness of distributions of penguin features were examined across sexes. Due to non-normal distribution of data, Wilcoxon test was chosen to investigate the difference of means between males and females.
-
-We categorized each feature into three categories and compared them in 3x2 contingency tables. To investigate dependence between sex and body mass, bill length, bill depth and flipper length in categorical format, Fisher's Exact test was chosen over χ2 because some frequencies in the data were ≤ 5. To elucidate effect size, Cramer's V values were determined. Used in 3x2 tables, Cramer's V values for effect size (ES) <0.10 were considered weakly associated, 0.1 < ES ≤ 0.5 was considered moderately associated, and ES > 0.5 was considered strongly associated. For association strength, Pearson residuals were calculated.
-
-
-
-# Results
-
-## General statistics of the Gentoo sample
+This report focused specifically on Gentoo penguins.
 
 ```{r}
 #On Gentoos
@@ -114,6 +112,8 @@ female=Gentoo[Gentoo$sex=="female",]
 #Gentoo number of males and females
 
 ```
+
+
 ```{r}
 mean_bill_depth = as.double(round(mean(Gentoo$bill_depth_mm, na.rm = TRUE)))
 mean_bill_length = as.double(round(mean(Gentoo$bill_length_mm, na.rm = TRUE)))
@@ -137,21 +137,22 @@ means_sexes = as.table(rbind(c(round(mean(Gentoo$body_mass_g, na.rm=TRUE), digit
 rownames(means_sexes)=c("Combined","Male", "Female")
 colnames(means_sexes)=c("Body mass (in g)", "Bill length (in mm)", "Bill depth (in mm)", "Flipper length (in mm)")
 
-knitr::kable(means_sexes)
+knitr::kable(means_sexes, caption = "Means of male and female Gentoo penguin measurements.", "pipe", align = "cccc")
 
 ```
 
-The total number of penguins was `r total_pengs`. A total of `r adelies`, `r gentoos`, `r chinstraps` penguins of species Adelie, Gentoo and Chinstraps were included respectively.
+# Statistical Analysis
+
+In this report, we chose α=0.05 as significance threshold. Data distribution normality was investigated with histograms and Shapiro-Wilkes normality test. Kurtosis and skewness of distributions of penguin features were examined across sexes. Due to non-normal distribution of data, Wilcoxon test was chosen to investigate the difference of means between males and females.
+
+We categorized each feature into three categories and compared them in 3x2 contingency tables. To investigate dependence between sex and body mass, bill length, bill depth and flipper length in categorical format, Fisher's Exact test was chosen over χ2 because some frequencies in the data were ≤ 5. To elucidate effect size, Cramer's V values were determined. Used in 3x2 tables, Cramer's V values for effect size (ES) <0.10 were considered weakly associated, 0.1 < ES ≤ 0.5 was considered moderately associated, and ES > 0.5 was considered strongly associated. For association strength, Pearson residuals were calculated.
 
 
-```{r}
-#Defining color variables here so that they are consistent and can be changed easily later on
-color_f = "hotpink2"
-color_m  = "skyblue"
-```
+# Results
 
+## Description and preparation of data
 
-For inferential statistics, we first consider distribution of data (normal or non-normal) and number of categories. (paired or unpaired?). 
+First, data was examined for distribution, kurtosis and skewness. 
 
 ```{r}
 #check if data is normally distributed
@@ -168,6 +169,7 @@ hist(female$bill_depth_mm, xlab = "Female Bill Depth (mm)", main = "Female Bill 
 hist(male$flipper_length_mm, xlab = "Male Flipper Length (mm)", main = "Male Flipper Length", col=color_m, border="black")
 hist(female$flipper_length_mm, xlab = "Female Flipper Length (mm)", main = "Female Flipper Length", col=color_f, border="black")
 ```
+
 
 ```{r}
 k.mbl = sbi$kurtosis(male$bill_length_mm)
@@ -214,6 +216,7 @@ knitr::kable(
   digits = 2) 
 ```
 
+Positive values for kurtosis indicates a distribution more peaked than normal, while negative kurtosis indicates a flatter distribution. Skewness between 0.5 and -0.5 indicate symmetrical distribution, more negative values suggest stronger negative skewness, indicating longer left tail while positive skewness suggest the majority of data accumulated on the left and a longer right tail. Here, only mild skewness was observed, but most notably male bill length data demonstrated high peaked distribution (kurtosis > 2).
 
 ```{r}
 #defining the tables 
@@ -244,7 +247,6 @@ levels(cLengthFlipper)=c("Small","Medium","Large")
 flength_cat = table(cLengthFlipper, Gentoo$sex)
 colnames(flength_cat) = c("Female", "Male")
 ```
-
 
 
 ```{r}
@@ -320,6 +322,9 @@ assoc(assoc.gentoo_weight, shade=TRUE)
 
 ```
 
+
+Association of the sexes with body weight categories was examined. For this, pearson residuals for six different associations could be considered among sexes and three categories. A positive association is demonstrated with a positive blue bar, and a negative association is demonstrated with a negative red bar. The intensity of the color suggests stronger association. Here, it can be seen that more females than would be expected by chance were observed in light category, while more males than by chance were observed in heavy category. There was little effect of sex on medium weight category.
+
 ## Association of Bill Depth and Sex
 
 ```{r}
@@ -339,7 +344,7 @@ assoc.gentoo_bdepth = table(Gentoo$sex, cDepthBill)
 cramersV.gentoo_bdepth = round(sbi$cramersV(assoc.gentoo_bdepth), digits=3) #from sbi.R
 ```
 
-Cramer's V is `r cramersV.gentoo_bdepth`.
+A Cramer's V test was performed to examine the relationship between sex and bill depth in Gentoo penguins and determine the effect size. There was a strong influence of the sex on bill depth category distribution between all classes p<0.05, Cramer's V is `r cramersV.gentoo_bdepth`.
 
 ```{r fig.width=7,fig.height=5, fig.cap="Bill Depth of Males and Females"}
 layout(matrix(c(1,2,3,3), ncol=2, byrow=TRUE), heights=c(4, 1))
@@ -360,6 +365,10 @@ assoc(assoc.gentoo_bdepth, shade=TRUE)
 
 ```
 
+
+Association of the sexes with body weight categories was examined. For this, pearson residuals for six different associations could be considered among sexes and three categories. A positive association is demonstrated with a positive blue bar, and a negative association is demonstrated with a negative red bar. The intensity of the color suggests stronger association. 
+
+Here, it can be seen that more females than would be expected by chance had a lower bill depth. And males had higher bill depth. A strong association of sex with bill depth is observed.
 
 ## Association of Bill Length and Sex
 
@@ -391,13 +400,16 @@ cramersV.gentoo_blen = round(sbi$cramersV(assoc.gentoo_blen), digits=3) #from sb
 ```
 
 
-Cramer's V is `r cramersV.gentoo_blen`.
+A Cramer's V test was performed to examine the relationship between sex and bill length in Gentoo penguins and determine the effect size. There was a strong influence of the sex on bill length category distribution between all classes p<0.05, Cramer's V is `r cramersV.gentoo_blen`.
 
 ```{r}
 dimnames(assoc.gentoo_blen) = list("Sex"=dimnames(assoc.gentoo_blen)[[1]],
                                      "Penguin Bill Length" = dimnames(assoc.gentoo_blen)[[2]])
 assoc(assoc.gentoo_blen, shade=TRUE)
 ```
+
+The figure demonstrated that more females than would be expected by chance had a lower bill length, while males had higher bill length. A strong association of sex with bill length was observed.
+
 ## Flipper Length and Sex
 
 ```{r}
@@ -427,7 +439,7 @@ assoc.gentoo_flength = table(Gentoo$sex, cLengthFlipper)
 cramersV.gentoo_flength = round(sbi$cramersV(assoc.gentoo_flength), digits=3) #from sbi.R
 ```
 
-Cramer's V is `r cramersV.gentoo_flength`.
+A Cramer's V test was performed to examine the relationship between sex and flipper length in Gentoo penguins and determine the effect size. There was a strong influence of the sex on flipper length category distribution between all flipper length classes p<0.05,Cramer's V is `r cramersV.gentoo_flength`.
 
 ```{r}
 dimnames(assoc.gentoo_flength) = list("Sex"=dimnames(assoc.gentoo_flength)[[1]],
@@ -435,7 +447,7 @@ dimnames(assoc.gentoo_flength) = list("Sex"=dimnames(assoc.gentoo_flength)[[1]],
 assoc(assoc.gentoo_flength, shade=TRUE)
 
 ```
-
+The results indicate that more females than would be expected by chance had flippers that were categorized as short, while males had longer flippers. Sex was found to be associated with flipper length.
 
 ## Summary 
 
@@ -450,21 +462,13 @@ par(mai = c(0.5,0.5,0.5,0.5))
 pairs(~ bill_length_mm+ bill_depth_mm + body_mass_g + flipper_length_mm ,data = Gentoo,col = c(color_m, color_f) )
 ```
 
-```{r}
-```
-
 
 # Discussion
 
-`r lipsum(2,paragraphs=1)`
+The analysis of sexual dimorphism in Gentoo Penguins (Pygoscelis papua) revealed intriguing patterns in body measurements, shedding light on the distinct characteristics between male and female individuals. Due to non-normal distribution, non-parametric tests, such as the Mann-Whitney U test, were appropriately employed. Notably, the results indicated significant differences between male and female Gentoo Penguins in body mass, bill length, bill depth, and flipper length. Fisher's Exact Test was employed due to the presence of cells with frequencies ≤ 5, revealing significant dependence in all categories.The effect size was quantified using Cramer's V values, with strong associations observed for body mass (0.789), bill length (0.647), and bill depth (0.711). These values highlight the substantial influence of sex on the distribution of these features among Gentoo Penguins. The findings show importance of body size and structural differences between males and females. This sexual dimorphism is likely driven by various ecological and evolutionary factors, including reproductive roles and behaviors. When considering body sizes in birds, one remarkable group that stands out is the penguins. Penguins are a unique family of flightless birds adapted to life in aquatic environments. What distinguishes them is their specialized morphology for a predominantly aquatic lifestyle. Unlike many other bird species, penguins have undergone significant modifications in their wing structure, which has evolved into flippers for efficient underwater propulsion rather than flight. Furthermore, the sexual dimorphism observed in penguins, as evidenced by your Gentoo Penguin analysis, can be linked to their distinct roles in reproduction. Understanding these differences in body mass, bill length, and flipper length becomes crucial for comprehending the ecological roles and behaviors associated with breeding, foraging, and overall survival within their specific habitats
 
-# Acknowledgment
-
-`r lipsum(2,paragraphs=1)`
 
 # Bibliography
 
 <div id="refs"></div>
-
-# Appendix
 
