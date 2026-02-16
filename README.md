@@ -9,13 +9,13 @@ This research aimed at examining discernible variations in physical traits betwe
 
 Some sample figures from the report:
 
-<img width="1344" height="960" alt="image" src="https://github.com/user-attachments/assets/46062b91-8ead-4977-8211-f90670622b99" />
+<img width="1008" height="720" alt="image" src="https://github.com/user-attachments/assets/46062b91-8ead-4977-8211-f90670622b99" />
 Summary of Gentoo Features Data Distribution Description
 
-<img width="1344" height="960" alt="image" src="https://github.com/user-attachments/assets/9d353e90-bda9-423e-afba-80bee66b619b" />
+<img width="1008" height="720" alt="image" src="https://github.com/user-attachments/assets/9d353e90-bda9-423e-afba-80bee66b619b" />
 Bill depth of males and females. Association of the sexes with body weight categories was examined. For this, pearson residuals for six different associations could be considered among sexes and three categories. A positive association is demonstrated with a positive blue bar, and a negative association is demonstrated with a negative red bar. The intensity of the color suggests stronger association.
 
-<img width="1344" height="960" alt="image" src="https://github.com/user-attachments/assets/fe0d2028-9d4c-4833-907b-b459ea3be00c" />
+<img width="1008" height="720" alt="image" src="https://github.com/user-attachments/assets/fe0d2028-9d4c-4833-907b-b459ea3be00c" />
 Paired up association of Gentoo features Summary
 
 
